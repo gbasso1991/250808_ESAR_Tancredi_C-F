@@ -170,39 +170,25 @@ def lector_ciclos(filepath):
 ciclos_C1=glob(('C1/**/*ciclo_promedio*'),recursive=True)
 ciclos_C1.sort()
 
-res_C1=glob('C1/**/*resultados*',recursive=True)
-res_C1.sort()
 ciclos_C2 = glob('C2/**/*ciclo_promedio*', recursive=True)
 ciclos_C2.sort()
-res_C2 = glob('C2/**/*resultados*', recursive=True)
-res_C2.sort()
 
 ciclos_C4 = glob('C4/**/*ciclo_promedio*', recursive=True)
 ciclos_C4.sort()
-res_C4 = glob('C4/**/*resultados*', recursive=True)
-res_C4.sort()
 
 labels_C=['C1','C2','C3','C4']
 
 ciclos_F1 = glob('F1/**/*ciclo_promedio*', recursive=True)
 ciclos_F1.sort()
-res_F1 = glob('F1/**/*resultados*', recursive=True)
-res_F1.sort()
 
 ciclos_F2 = glob('F2/**/*ciclo_promedio*', recursive=True)
 ciclos_F2.sort()
-res_F2 = glob('F2/**/*resultados*', recursive=True)
-res_F2.sort()
 
 ciclos_F3 = glob('F3/**/*ciclo_promedio*', recursive=True)
 ciclos_F3.sort()
-res_F3 = glob('F3/**/*resultados*', recursive=True)
-res_F3.sort()
 
 ciclos_F4 = glob('F4/**/*ciclo_promedio*', recursive=True)
 ciclos_F4.sort()
-res_F4 = glob('F4/**/*resultados*', recursive=True)
-res_F4.sort()
 
 labels_F=['F1','F2','F3','F4']
 
@@ -216,20 +202,19 @@ plot_ciclos_promedio('F1')
 plot_ciclos_promedio('F2')
 plot_ciclos_promedio('F3')
 plot_ciclos_promedio('F4')
-#%%
-f1-1- 123146
-f2 -3 - 124049
-f3 - 1 - 124517
-f4 - 1 - 125106
-#%%
-#%% selecciono 
-C1-2 -115711
-c2-1 -120233
-c3-2 -121118
-c4-2 121712 
-#%%
 
-# Patrón que busca en todas las subcarpetas de C1, filtra por "ciclo_promedio" y luego por "115711" en la ruta
+#%% selecciono mejores ciclos
+# C1-2 -115711
+# c2-1 -120233
+# c3-2 -121118
+# c4-2 121712 
+# [1,0,1,1]
+# f1-1- 123146
+# f2 -3 - 124049
+# f3 - 1 - 124517
+# f4 - 1 - 125106
+# [0,2,0,0]
+#%% Ciclos seleccionados
 ciclo_C1 = glob('C1/**/*115711/**/*ciclo_promedio*', recursive=True)
 ciclo_C2 = glob('C2/**/*120233/**/*ciclo_promedio*', recursive=True)
 ciclo_C3 = glob('C3/**/*121118/**/*ciclo_promedio*', recursive=True)
@@ -239,10 +224,7 @@ ciclo_F2 = glob('F2/**/*124049/**/*ciclo_promedio*', recursive=True)
 ciclo_F3 = glob('F3/**/*124517/**/*ciclo_promedio*', recursive=True)
 ciclo_F4 = glob('F4/**/*125106/**/*ciclo_promedio*', recursive=True)
 
-# Leer y graficar los ciclos seleccionados para muestras C y F
-
-fig, (a, b) = plt.subplots(2, 1, figsize=(8, 9), sharex=True, sharey=True, constrained_layout=True)
-
+fig, (a, b) = plt.subplots(2, 1, figsize=(7, 9), sharex=True, sharey=True, constrained_layout=True)
 # Muestras C
 ciclos_C = [ciclo_C1, ciclo_C2, ciclo_C3, ciclo_C4]
 labels_C_plot = ['C1', 'C2', 'C3', 'C4']
@@ -250,8 +232,7 @@ labels_C_plot = ['C1', 'C2', 'C3', 'C4']
 for idx, (ciclo, label) in enumerate(zip(ciclos_C, labels_C_plot)):
     if ciclo:  # Verifica que la lista no esté vacía
         t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
-        a.plot(H_kAm, M_Am, '.-', label=label)
-
+        a.plot(H_kAm, M_Am, '-', label=label)
 a.set_ylabel('Magnetización (A/m)')
 a.legend(ncol=1, loc='lower right')
 a.grid()
@@ -265,7 +246,7 @@ labels_F_plot = ['F1', 'F2', 'F3', 'F4']
 for idx, (ciclo, label) in enumerate(zip(ciclos_F, labels_F_plot)):
     if ciclo:
         t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
-        b.plot(H_kAm, M_Am, '.-', label=label)
+        b.plot(H_kAm, M_Am, '-', label=label)
 
 b.set_ylabel('Magnetización (A/m)')
 b.set_xlabel('Campo (A/m)')
@@ -273,63 +254,149 @@ b.legend(ncol=1, loc='lower right')
 b.grid()
 b.set_title('Muestras F - 300 kHz - 57 kA/m')
 
-#plt.savefig('comparativa_ciclos_C_F.png', dpi=300)
+plt.savefig('comparativa_ciclos_C_F.png', dpi=300)
 plt.show()
+#%% SAR y tau 
 
+res_C1 = glob('C1/**/*resultados*',recursive=True)
+res_C2 = glob('C2/**/*resultados*', recursive=True)
+res_C3 = glob('C3/**/*resultados*', recursive=True)
+res_C4 = glob('C4/**/*resultados*', recursive=True)
+res_C=[res_C1,res_C2, res_C3,res_C4]
+for r in res_C:
+    r.sort()
+    
+SAR_C1,err_SAR_C1,tau_C1,err_tau_C1 = [],[],[],[]
+SAR_C2,err_SAR_C2,tau_C2,err_tau_C2 = [],[],[],[]
+SAR_C3,err_SAR_C3,tau_C3,err_tau_C3 = [],[],[],[]
+SAR_C4,err_SAR_C4,tau_C4,err_tau_C4 = [],[],[],[]
+    
+for C in res_C1:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(C)
+    SAR_C1.append(meta['SAR_W/g'].n)
+    err_SAR_C1.append(meta['SAR_W/g'].s)
+    tau_C1.append(meta['tau_ns'].n)
+    err_tau_C1.append(meta['tau_ns'].s)
+for C in res_C2:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(C)
+    SAR_C2.append(meta['SAR_W/g'].n)
+    err_SAR_C2.append(meta['SAR_W/g'].s)
+    tau_C2.append(meta['tau_ns'].n)
+    err_tau_C2.append(meta['tau_ns'].s)    
+for C in res_C3:    
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(C)
+    SAR_C3.append(meta['SAR_W/g'].n)
+    err_SAR_C3.append(meta['SAR_W/g'].s)
+    tau_C3.append(meta['tau_ns'].n)
+    err_tau_C3.append(meta['tau_ns'].s)
+for C in res_C4:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(C)
+    SAR_C4.append(meta['SAR_W/g'].n)
+    err_SAR_C4.append(meta['SAR_W/g'].s)
+    tau_C4.append(meta['tau_ns'].n)
+    err_tau_C4.append(meta['tau_ns'].s)
 
+res_F1 = glob('F1/**/*resultados*', recursive=True)
+res_F2 = glob('F2/**/*resultados*', recursive=True)
+res_F3 = glob('F3/**/*resultados*', recursive=True)
+res_F4 = glob('F4/**/*resultados*', recursive=True)
+res_F=[res_F1,res_F2, res_F3,res_F4]
+for r in res_F:    
+    r.sort()
 
-# %%
+SAR_F1,err_SAR_F1,tau_F1,err_tau_F1 = [],[],[],[]
+SAR_F2,err_SAR_F2,tau_F2,err_tau_F2 = [],[],[],[]
+SAR_F3,err_SAR_F3,tau_F3,err_tau_F3 = [],[],[],[]
+SAR_F4,err_SAR_F4,tau_F4,err_tau_F4 = [],[],[],[]
+
+for F in res_F1:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(F)
+    SAR_F1.append(meta['SAR_W/g'].n)
+    err_SAR_F1.append(meta['SAR_W/g'].s)
+    tau_F1.append(meta['tau_ns'].n)
+    err_tau_F1.append(meta['tau_ns'].s)
+for F in res_F2:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(F)
+    SAR_F2.append(meta['SAR_W/g'].n)
+    err_SAR_F2.append(meta['SAR_W/g'].s)
+    tau_F2.append(meta['tau_ns'].n)
+    err_tau_F2.append(meta['tau_ns'].s)    
+for F in res_F3:    
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(F)
+    SAR_F3.append(meta['SAR_W/g'].n)
+    err_SAR_F3.append(meta['SAR_W/g'].s)
+    tau_F3.append(meta['tau_ns'].n)
+    err_tau_F3.append(meta['tau_ns'].s)
+for F in res_F4:
+    meta, _,_,_,_,_,_,_,_,_,_,_,SAR,tau,_= lector_resultados(F)
+    SAR_F4.append(meta['SAR_W/g'].n)
+    err_SAR_F4.append(meta['SAR_W/g'].s)
+    tau_F4.append(meta['tau_ns'].n)
+    err_tau_F4.append(meta['tau_ns'].s)
+
+    
 #%%
+fig,(a,b)=plt.subplots(nrows=2,figsize=(7,5),constrained_layout=True)
+categories = ['C1', 'C2', 'C3', 'C4']
+categories2 = ['F1', 'F2', 'F3', 'F4']
 
+for i, (sarC, errC) in enumerate(zip([SAR_C1, SAR_C2, SAR_C3, SAR_C4],
+                    [err_SAR_C1, err_SAR_C2, err_SAR_C3, err_SAR_C4])):
+    x_pos = [i+1]*len(sarC)  # Posición X fija para cada categoría
+    a.errorbar(x_pos, sarC, yerr=errC,fmt='.', 
+                 label=categories[i], 
+                 capsize=5, linestyle='None')
 
-
-
-
-
-
-
-
-
-#%% SAR
-fig, (ax,ax2) = plt.subplots(nrows=2,figsize=(8,6),constrained_layout=True,sharex=True,sharey=True)
-ax.set_title(f' {f_label/1000:.0f} kHz - {H_label/1000:.0f} kA/m - congelado sin Campo',loc='left',y=0.89)
-ax.plot(T_csC1,SAR_csC1,'.-',c='C0',label=labels_sC[0])
-ax.plot(T_csC2,SAR_csC2,'.-',c='C1',label=labels_sC[1])
-
-ax2.set_title(f' {f_label/1000:.0f} kHz - {H_label/1000:.0f} kA/m - congelado con Campo',loc='left',y=0.89)
-ax2.plot(T_ccC1,SAR_ccC1,'.-',c='C2',label=labels_cC[0])
-ax2.plot(T_ccC2,SAR_ccC2,'.-',c='C3',label=labels_cC[1])
-
-for a in fig.axes:
-    a.grid()   
-    a.set_ylabel('SAR (W/g)')
-    a.legend(ncol=1)
-ax2.set_xlabel('Temperature (°C)')
-plt.suptitle('SAR vs T',fontsize=15)    
-# ax.set_xlim(0,60e3)
-# ax.set_ylim(0,)
-#plt.savefig('8A_ciclo_HM_'+idc[i]+'.png',dpi=400)
+for j, (sarF, errF) in enumerate(zip([SAR_F1, SAR_F2, SAR_F3, SAR_F4],
+                    [err_SAR_F1, err_SAR_F2, err_SAR_F3, err_SAR_F4])):
+    x2_pos = [j+1]*len(sarF)  # Posición X fija para cada categoría
+    b.errorbar(x2_pos, sarF, yerr=errF, fmt='.', 
+                 label=categories2[j], 
+                 capsize=5, linestyle='None')
+a.set_title('Muestras C - 300 kHz - 57 kA/m')
+b.set_title('Muestras F - 300 kHz - 57 kA/m')
+for ax in (a,b):
+    ax.set_xticks([1, 2, 3, 4])
+    # ax.set_xlabel('Categorías')
+    ax.set_ylabel('SAR (W/g)')
+    ax.legend(ncol=2, loc='upper right')
+    ax.grid(True, axis='y', linestyle='--')
+a.set_xticklabels(categories)
+b.set_xticklabels(categories2)
+plt.savefig('comparativa_SAR_C_F.png', dpi=300)
 plt.show()
-#%% tau
-fig, (ax,ax2) = plt.subplots(nrows=2,figsize=(8,6),constrained_layout=True,sharex=True,sharey=True)
-ax.set_title(f' {f_label/1000:.0f} kHz - {H_label/1000:.0f} kA/m - congelado sin Campo',loc='left',y=0.89)
-ax.plot(T_csC1,tau_csC1,'.-',c='C0',label=labels_sC[0])
-ax.plot(T_csC2,tau_csC2,'.-',c='C1',label=labels_sC[1])
+#%%
+fig2, (a, b) = plt.subplots(nrows=2, figsize=(7, 5), constrained_layout=True)
 
-ax2.set_title(f' {f_label/1000:.0f} kHz - {H_label/1000:.0f} kA/m - congelado con Campo',loc='left',y=0.89)
-ax2.plot(T_ccC1,tau_ccC1,'.-',c='C2',label=labels_cC[0])
-ax2.plot(T_ccC2,tau_ccC2,'.-',c='C3',label=labels_cC[1])
+categories = ['C1', 'C2', 'C3', 'C4']
+categories2 = ['F1', 'F2', 'F3', 'F4']
 
-for a in fig.axes:
-    a.grid()   
-    a.set_ylabel('tau (W/g)')
-    a.legend(ncol=1,loc='lower left')
-ax2.set_xlabel('Temperature (°C)')
-plt.suptitle('tau vs T',fontsize=15)    
-# ax.set_xlim(0,60e3)
-# ax.set_ylim(0,)
-#plt.savefig('8A_ciclo_HM_'+idc[i]+'.png',dpi=400)
+for i, (tauC, err_tauC) in enumerate(zip([tau_C1, tau_C2, tau_C3, tau_C4],
+                                         [err_tau_C1, err_tau_C2, err_tau_C3, err_tau_C4])):
+    x_pos = [i+1]*len(tauC)  # Posición X fija para cada categoría
+    a.errorbar(x_pos, tauC, yerr=err_tauC, fmt='.', 
+               label=categories[i], 
+               capsize=5, linestyle='None')
+
+for j, (tauF, err_tauF) in enumerate(zip([tau_F1, tau_F2, tau_F3, tau_F4],
+                                         [err_tau_F1, err_tau_F2, err_tau_F3, err_tau_F4])):
+    x2_pos = [j+1]*len(tauF)  # Posición X fija para cada categoría
+    b.errorbar(x2_pos, tauF, yerr=err_tauF, fmt='.', 
+               label=categories2[j], 
+               capsize=5, linestyle='None')
+
+a.set_title('Muestras C - 300 kHz - 57 kA/m')
+b.set_title('Muestras F - 300 kHz - 57 kA/m')
+
+for ax in (a, b):
+    ax.set_ylabel(r'$\tau$ (ns)')
+    ax.set_xticks([1, 2, 3, 4])
+    # ax.set_xlabel('Categorías')
+    ax.legend(ncol=2, loc='upper right')
+    ax.grid(True, axis='y', linestyle='--')
+a.set_xticklabels(categories)
+b.set_xticklabels(categories2)
+plt.savefig('comparativa_tau_C_F.png', dpi=300)
 plt.show()
-
 
 # %%
