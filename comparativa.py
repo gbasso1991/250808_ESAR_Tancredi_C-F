@@ -216,35 +216,64 @@ plot_ciclos_promedio('F1')
 plot_ciclos_promedio('F2')
 plot_ciclos_promedio('F3')
 plot_ciclos_promedio('F4')
-
 #%%
-fig, (a, b) = plt.subplots(1, 2, figsize=(14, 5), sharex=True, sharey=True, constrained_layout=True)
+f1-1- 123146
+f2 -3 - 124049
+f3 - 1 - 124517
+f4 - 1 - 125106
+#%%
+#%% selecciono 
+C1-2 -115711
+c2-1 -120233
+c3-2 -121118
+c4-2 121712 
+#%%
 
-# Izquierda: muestras C
+# Patrón que busca en todas las subcarpetas de C1, filtra por "ciclo_promedio" y luego por "115711" en la ruta
+ciclo_C1 = glob('C1/**/*115711/**/*ciclo_promedio*', recursive=True)
+ciclo_C2 = glob('C2/**/*120233/**/*ciclo_promedio*', recursive=True)
+ciclo_C3 = glob('C3/**/*121118/**/*ciclo_promedio*', recursive=True)
+ciclo_C4 = glob('C4/**/*121712/**/*ciclo_promedio*', recursive=True)
+ciclo_F1 = glob('F1/**/*123146/**/*ciclo_promedio*', recursive=True)
+ciclo_F2 = glob('F2/**/*124049/**/*ciclo_promedio*', recursive=True)
+ciclo_F3 = glob('F3/**/*124517/**/*ciclo_promedio*', recursive=True)
+ciclo_F4 = glob('F4/**/*125106/**/*ciclo_promedio*', recursive=True)
 
-for idx, label in enumerate(labels_C):
-_,_,_,H_C1,M_C1,_ = lector_ciclos(ciclos_C1[0])
-    a.plot(H, m_norm, '.', label=nombre )
-    a.plot(H_fit_arrays[nombre], m_fit_arrays[nombre], '-', label=nombre+' Fitting')
+# Leer y graficar los ciclos seleccionados para muestras C y F
 
-a.set_ylabel('m (emu/g)')
-a.legend(ncol=2)
+fig, (a, b) = plt.subplots(2, 1, figsize=(8, 9), sharex=True, sharey=True, constrained_layout=True)
+
+# Muestras C
+ciclos_C = [ciclo_C1, ciclo_C2, ciclo_C3, ciclo_C4]
+labels_C_plot = ['C1', 'C2', 'C3', 'C4']
+
+for idx, (ciclo, label) in enumerate(zip(ciclos_C, labels_C_plot)):
+    if ciclo:  # Verifica que la lista no esté vacía
+        t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
+        a.plot(H_kAm, M_Am, '.-', label=label)
+
+a.set_ylabel('Magnetización (A/m)')
+a.legend(ncol=1, loc='lower right')
 a.grid()
-a.set_title('Muestras C')
-a.set_xlabel('H (G)')
+a.set_title('Muestras C - 300 kHz - 57 kA/m')
+a.set_xlabel('Campo (A/m)')
 
-# Derecha: muestras F
-for idx, (nombre, H, m_norm) in enumerate(muestras_F):
-    b.plot(H, m_norm, '.', label=nombre )
-    b.plot(H_fit_arrays[nombre], m_fit_arrays[nombre], '-', label=nombre+' Fitting')
+# Muestras F
+ciclos_F = [ciclo_F1, ciclo_F2, ciclo_F3, ciclo_F4]
+labels_F_plot = ['F1', 'F2', 'F3', 'F4']
 
-b.set_ylabel('m (emu/g)')
-b.set_xlabel('H (G)')
-b.legend(ncol=2)
+for idx, (ciclo, label) in enumerate(zip(ciclos_F, labels_F_plot)):
+    if ciclo:
+        t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
+        b.plot(H_kAm, M_Am, '.-', label=label)
+
+b.set_ylabel('Magnetización (A/m)')
+b.set_xlabel('Campo (A/m)')
+b.legend(ncol=1, loc='lower right')
 b.grid()
-b.set_title('Muestras F')
+b.set_title('Muestras F - 300 kHz - 57 kA/m')
 
-plt.savefig('VSM_fits_C_F.png', dpi=300)
+#plt.savefig('comparativa_ciclos_C_F.png', dpi=300)
 plt.show()
 
 
