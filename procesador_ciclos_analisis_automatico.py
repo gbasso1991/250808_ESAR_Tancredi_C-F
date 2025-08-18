@@ -63,10 +63,10 @@ un_solo_fondo=1
 resto_fondo=1
 templog = 0
 N_espiras_bob_captora=5
-nombre='*C2     '
+nombre='*F4'
 Analisis_de_Fourier = 1 # sobre las señales, imprime espectro de señal muestra
 N_armonicos_impares = 10
-concentracion =10*1e3 #[concentracion]= g/m^3 (1 g/l == 1e3 g/m^3) (Default = 10000 g/m^3)
+concentracion =4.24*1e3 #[concentracion]= g/m^3 (1 g/l == 1e3 g/m^3) (Default = 10000 g/m^3)
 capsula_glucosa=0   # capsula para solventes organicos
 detector_ciclos_descartables=True #en funcion a Mag max para evitar guardar/promediar con ciclos in/out
 Ciclo_promedio=1

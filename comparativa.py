@@ -1,4 +1,3 @@
-
 #%%Comparador resultados de medidas ESAR en C-F de Pablo Tancredi
 # Medidas a 300 kHz y 57 kA/m
 import matplotlib.pyplot as plt
@@ -51,8 +50,8 @@ def plot_ciclos_promedio(directorio):
             print(f"Error procesando archivo {archivo}: {str(e)}")
             continue
 
-    plt.xlabel('Campo magnético (kA/m)')
-    plt.ylabel('Magnetización (A/m)')
+    plt.xlabel('H (kA/m)')
+    plt.ylabel('M (A/m)')
     plt.title(f'Comparación de ciclos de histéresis {os.path.split(directorio)[-1]}')
     plt.grid(True)
     plt.legend()  # Leyenda fuera del gráfico
@@ -236,8 +235,8 @@ for idx, (ciclo, label) in enumerate(zip(ciclos_C, labels_C_plot)):
 a.set_ylabel('Magnetización (A/m)')
 a.legend(ncol=1, loc='lower right')
 a.grid()
-a.set_title('Muestras C - 300 kHz - 57 kA/m')
-a.set_xlabel('Campo (A/m)')
+a.set_title('Muestras C - 300 kHz - 57 kA/m',loc='left')
+#a.set_xlabel('Campo (A/m)')
 
 # Muestras F
 ciclos_F = [ciclo_F1, ciclo_F2, ciclo_F3, ciclo_F4]
@@ -248,13 +247,41 @@ for idx, (ciclo, label) in enumerate(zip(ciclos_F, labels_F_plot)):
         t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
         b.plot(H_kAm, M_Am, '-', label=label)
 
-b.set_ylabel('Magnetización (A/m)')
-b.set_xlabel('Campo (A/m)')
+b.set_ylabel('M (A/m)')
+b.set_xlabel('H(A/m)')
 b.legend(ncol=1, loc='lower right')
 b.grid()
-b.set_title('Muestras F - 300 kHz - 57 kA/m')
+b.set_title('Muestras F - 300 kHz - 57 kA/m',loc='left')
 
 plt.savefig('comparativa_ciclos_C_F.png', dpi=300)
+plt.show()
+#%% F2 y F4 normalizados por masa de Fe3O4
+vol=100*1e-6 #volumen de la muestra en m³ 
+
+
+fig, a = plt.subplots(1, 1, figsize=(6, 4.5), sharex=True, sharey=True, constrained_layout=True)
+
+a.set_title('F2 & F4 normalizadas - 300 kHz - 57 kA/m',loc='left')
+#a.set_xlabel('Campo (A/m)')
+
+# Muestras F
+ciclos_F = [ ciclo_F2, ciclo_F4]
+masas_F = []
+labels_F_plot = ['F2','F4']
+
+for idx, (ciclo, label) in enumerate(zip(ciclos_F, labels_F_plot)):
+    if ciclo:
+        t, H_Vs, M_Vs, H_kAm, M_Am, metadata = lector_ciclos(ciclo[0])
+        masa=metadata['Concentracion_g/m^3']*1e-3*vol      #masa en kg
+        a.plot(H_kAm, M_Am/masa, '-', label=label)
+
+a.set_ylabel('M/mass (Am²/kg)')
+a.set_xlabel('H(A/m)')
+a.legend(ncol=1, loc='lower right')
+a.grid()
+a.set_title('Muestras F - 300 kHz - 57 kA/m',loc='left')
+
+plt.savefig('comparativa_ciclos_C_F_norm.png', dpi=300)
 plt.show()
 #%% SAR y tau 
 
@@ -335,7 +362,7 @@ for F in res_F4:
     err_tau_F4.append(meta['tau_ns'].s)
 
     
-#%%
+#%% SAR
 fig,(a,b)=plt.subplots(nrows=2,figsize=(7,5),constrained_layout=True)
 categories = ['C1', 'C2', 'C3', 'C4']
 categories2 = ['F1', 'F2', 'F3', 'F4']
@@ -353,8 +380,8 @@ for j, (sarF, errF) in enumerate(zip([SAR_F1, SAR_F2, SAR_F3, SAR_F4],
     b.errorbar(x2_pos, sarF, yerr=errF, fmt='.', 
                  label=categories2[j], 
                  capsize=5, linestyle='None')
-a.set_title('Muestras C - 300 kHz - 57 kA/m')
-b.set_title('Muestras F - 300 kHz - 57 kA/m')
+a.set_title('Muestras C - 300 kHz - 57 kA/m',loc='left')
+b.set_title('Muestras F - 300 kHz - 57 kA/m',loc='left')
 for ax in (a,b):
     ax.set_xticks([1, 2, 3, 4])
     # ax.set_xlabel('Categorías')
@@ -365,7 +392,7 @@ a.set_xticklabels(categories)
 b.set_xticklabels(categories2)
 plt.savefig('comparativa_SAR_C_F.png', dpi=300)
 plt.show()
-#%%
+#%% Tau
 fig2, (a, b) = plt.subplots(nrows=2, figsize=(7, 5), constrained_layout=True)
 
 categories = ['C1', 'C2', 'C3', 'C4']
@@ -385,8 +412,8 @@ for j, (tauF, err_tauF) in enumerate(zip([tau_F1, tau_F2, tau_F3, tau_F4],
                label=categories2[j], 
                capsize=5, linestyle='None')
 
-a.set_title('Muestras C - 300 kHz - 57 kA/m')
-b.set_title('Muestras F - 300 kHz - 57 kA/m')
+a.set_title('Muestras C - 300 kHz - 57 kA/m',loc='left')
+b.set_title('Muestras F - 300 kHz - 57 kA/m',loc='left')
 
 for ax in (a, b):
     ax.set_ylabel(r'$\tau$ (ns)')
